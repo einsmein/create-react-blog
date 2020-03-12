@@ -1,0 +1,12 @@
+.title {
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1rem;
+  margin: 2.625rem;
+  text-rendering: optimizeLegibility;
+}
+.title a {
+  color: black;
+  text-decoration: none;
+}

@@ -12,9 +12,12 @@ import {
 import React from 'react'
 import { join } from 'path'
 import { chunk, fromPairs } from 'lodash'
+import Grid from '@material-ui/core/Grid'
 import BlogIndexPage from '../components/BlogIndexPage'
-import BlogLayout from '../components/BlogLayout'
+import Layout from '../components/Layout'
+import Header from '../components/Header'
 import BlogPostLayout from '../components/BlogPostLayout'
+import Menu from '../components/Menu'
 import siteMetadata from '../siteMetadata'
 import posts from './posts'
 
@@ -66,7 +69,7 @@ let chunkPagePairs = chunks.map((chunk, i) => [
 const routes = compose(
   withContext((req, context) => ({
     ...context,
-    blogRoot: req.mountpath || '/',
+    blogRoot: req.mountpath + 'art' || '/art',
   })),
   withView((req, context) => {
     // Check if the current page is an index page by comparing the remaining
@@ -75,14 +78,22 @@ const routes = compose(
 
     // Render the application-wide layout
     return (
-      <BlogLayout blogRoot={context.blogRoot} isViewingIndex={isViewingIndex} />
+      <div>
+        <Header root='/' />
+        <Grid container>
+          <Menu/>
+          <Layout blogRoot={context.blogRoot} isViewingIndex={isViewingIndex} />
+        </Grid>
+      </div>
     )
   }),
   mount({
     // The blog's index pages go here. The first index page is mapped to the
     // root URL, with a redirect from "/page/1". Subsequent index pages are
     // mapped to "/page/n".
-    '/': chunkPagePairs.shift()[1],
+
+    '/': lazy(() => import('./tech')),
+    '/art': chunkPagePairs.shift()[1],
     '/page': mount({
       '/1': redirect((req, context) => context.blogRoot),
       ...fromPairs(chunkPagePairs),
@@ -90,7 +101,7 @@ const routes = compose(
 
     // Put posts under "/posts", so that they can be wrapped with a
     // "<BlogPostLayout />" that configures MDX and adds a post-specific layout.
-    '/posts': compose(
+    '/art/posts': compose(
       withView((req, context) => (
         <BlogPostLayout blogRoot={context.blogRoot} />
       )),
@@ -100,6 +111,7 @@ const routes = compose(
     // Miscellaneous pages can be added directly to the root switch.
     '/tags': lazy(() => import('./tags')),
     '/about': lazy(() => import('./about')),
+    '/tech': lazy(() => import('./tech')),
 
     // Only the statically built copy of the RSS feed is intended to be opened,
     // but the route is defined here so that the static renderer will pick it

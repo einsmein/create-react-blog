@@ -38,12 +38,6 @@ function BlogPostLayout({ blogRoot }) {
           <MDXComponent />
         </MDXProvider>
         <footer className={styles.footer}>
-          <h3 className={styles.title}>
-            <Link href={blogRoot}>
-              {siteMetadata.title}
-            </Link>
-          </h3>
-          <Bio className={styles.bio} />
           <section className={styles.links}>
             {
               data.previousDetails &&
