@@ -17,59 +17,16 @@ import BlogIndexPage from '../components/BlogIndexPage'
 import Layout from '../components/Layout'
 import Header from '../components/Header'
 import BlogPostLayout from '../components/BlogPostLayout'
-import Menu from '../components/Menu'
 import siteMetadata from '../siteMetadata'
-import posts from './posts'
+import { chunkPagePairs as postPairs, posts } from './posts'
 
-// Split the posts into a list of chunks of the given size, and
-// then build index pages for each chunk.
-let chunks = chunk(posts, siteMetadata.indexPageSize)
-let chunkPagePairs = chunks.map((chunk, i) => [
-  '/' + (i + 1),
-  map(async (req, context) => {
-    // Don't load anything when just crawling
-    if (req.method === 'HEAD') {
-      return route()
-    }
 
-    // Get metadata for all pages on this page
-    let postRoutes = await Promise.all(
-      chunk.map(async post => {
-        let href = join(context.blogRoot, 'posts', post.slug)
-        return await resolve({
-          // If you want to show the page content on the index page, set
-          // this to 'GET' to be able to access it.
-          method: 'HEAD',
-          routes,
-          url: href,
-        })
-      }),
-    )
-
-    // Only add a page number to the page title after the first index page.
-    let pageTitle = siteMetadata.title
-    if (i > 0) {
-      pageTitle += ` – page ${i + 1}`
-    }
-
-    return route({
-      title: pageTitle,
-      view: (
-        <BlogIndexPage
-          blogRoot={context.blogRoot}
-          pageNumber={i + 1}
-          pageCount={chunks.length}
-          postRoutes={postRoutes}
-        />
-      ),
-    })
-  }),
-])
+const paths = [ 'about', 'archive', 'tech', 'blog' ]
 
 const routes = compose(
   withContext((req, context) => ({
     ...context,
-    blogRoot: req.mountpath + 'art' || '/art',
+    archiveRoot: req.mountpath + 'archive' || '/archive',
   })),
   withView((req, context) => {
     // Check if the current page is an index page by comparing the remaining
@@ -80,10 +37,7 @@ const routes = compose(
     return (
       <div>
         <Header root='/' />
-        <Grid container>
-          <Menu/>
-          <Layout blogRoot={context.blogRoot} isViewingIndex={isViewingIndex} />
-        </Grid>
+        <Layout root='/' paths={paths}/>
       </div>
     )
   }),
@@ -93,17 +47,17 @@ const routes = compose(
     // mapped to "/page/n".
 
     '/': lazy(() => import('./tech')),
-    '/art': chunkPagePairs.shift()[1],
-    '/page': mount({
-      '/1': redirect((req, context) => context.blogRoot),
-      ...fromPairs(chunkPagePairs),
+    '/archive': postPairs.shift()[1],
+    '/archive/page': mount({
+      '/1': redirect((req, context) => context.archiveRoot),
+      ...fromPairs(postPairs),
     }),
 
     // Put posts under "/posts", so that they can be wrapped with a
     // "<BlogPostLayout />" that configures MDX and adds a post-specific layout.
-    '/art/posts': compose(
+    '/archive/posts': compose(
       withView((req, context) => (
-        <BlogPostLayout blogRoot={context.blogRoot} />
+        <BlogPostLayout blogRoot={context.archiveRoot} />
       )),
       mount(fromPairs(posts.map(post => ['/' + post.slug, post.getPage]))),
     ),

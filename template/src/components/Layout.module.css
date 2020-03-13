@@ -1,7 +1,16 @@
 .container {
   margin: 0 auto;
   max-width: 42rem;
-  padding: 2.625rem 1.3125rem;
+  padding: 2.625rem;
+}
+
+.Menu {
+  padding: 2.5rem;
+  width: 10rem;
+}
+
+.Box {
+  padding: 0.3rem 0rem;
 }
 
 .title {
