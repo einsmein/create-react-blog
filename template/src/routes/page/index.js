@@ -2,7 +2,7 @@ import React from 'react'
 import * as Navi from 'navi'
 
 export default Navi.route({
-  title: "About",
+  title: "Page",
   getView: () => {
     return (
       <div>

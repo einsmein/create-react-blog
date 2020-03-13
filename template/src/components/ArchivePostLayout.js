@@ -6,7 +6,7 @@ import ArticleMeta from './ArticleMeta'
 import Bio from './Bio'
 import styles from './BlogPostLayout.module.css'
 
-function BlogPostLayout({ blogRoot }) {
+function BlogPostLayout({ archiveRoot }) {
   let { title, data, url } = useCurrentRoute()
   let { connect, content, head } = useView()
   let { MDXComponent, readingTime } = content
@@ -23,7 +23,7 @@ function BlogPostLayout({ blogRoot }) {
             <Link href={url.pathname}>{title}</Link>
           </h1>
           <ArticleMeta
-            blogRoot={blogRoot}
+            blogRoot={archiveRoot}
             meta={data}
             readingTime={readingTime}
           />

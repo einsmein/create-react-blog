@@ -8,7 +8,7 @@ function Header({ root }) {
     <div>
       <header>
         <h1 className={styles.title}>
-          <Link href={root}><b>einsmein</b> [ {siteMetadata.title} ]</Link>
+          <Link href={root}>{siteMetadata.title}</Link>
         </h1>
       </header>
     </div>

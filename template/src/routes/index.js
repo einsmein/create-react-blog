@@ -13,15 +13,14 @@ import React from 'react'
 import { join } from 'path'
 import { chunk, fromPairs } from 'lodash'
 import Grid from '@material-ui/core/Grid'
-import BlogIndexPage from '../components/BlogIndexPage'
 import Layout from '../components/Layout'
 import Header from '../components/Header'
-import BlogPostLayout from '../components/BlogPostLayout'
+import ArchivePostLayout from '../components/ArchivePostLayout'
 import siteMetadata from '../siteMetadata'
 import { chunkPagePairs as postPairs, posts } from './posts'
 
 
-const paths = [ 'about', 'archive', 'tech', 'blog' ]
+const paths = [ 'about', 'archive', 'page' ]
 
 const routes = compose(
   withContext((req, context) => ({
@@ -46,7 +45,7 @@ const routes = compose(
     // root URL, with a redirect from "/page/1". Subsequent index pages are
     // mapped to "/page/n".
 
-    '/': lazy(() => import('./tech')),
+    '/': lazy(() => import('./page')),
     '/archive': postPairs.shift()[1],
     '/archive/page': mount({
       '/1': redirect((req, context) => context.archiveRoot),
@@ -54,10 +53,10 @@ const routes = compose(
     }),
 
     // Put posts under "/posts", so that they can be wrapped with a
-    // "<BlogPostLayout />" that configures MDX and adds a post-specific layout.
+    // "<ArchivePostLayout />" that configures MDX and adds a post-specific layout.
     '/archive/posts': compose(
       withView((req, context) => (
-        <BlogPostLayout blogRoot={context.archiveRoot} />
+        <ArchivePostLayout archiveRoot={context.archiveRoot} />
       )),
       mount(fromPairs(posts.map(post => ['/' + post.slug, post.getPage]))),
     ),
@@ -65,7 +64,7 @@ const routes = compose(
     // Miscellaneous pages can be added directly to the root switch.
     '/tags': lazy(() => import('./tags')),
     '/about': lazy(() => import('./about')),
-    '/tech': lazy(() => import('./tech')),
+    '/page': lazy(() => import('./page')),
 
     // Only the statically built copy of the RSS feed is intended to be opened,
     // but the route is defined here so that the static renderer will pick it
